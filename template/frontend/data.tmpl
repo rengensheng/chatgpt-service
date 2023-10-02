@@ -1,0 +1,30 @@
+import { BasicColumn } from '/@/components/Table';
+import { FormSchema } from '/@/components/Table';
+
+export const columns: BasicColumn[] = [
+{{range $i, $v := .FrontendFields}}
+  {
+    title: '{{$v.FieldName}}',
+    dataIndex: '{{$v.FieldValue}}',
+  },{{end}}
+];
+
+export const searchFormSchema: FormSchema[] = [
+{{range $i, $v := .FrontendFields}}
+  {
+    field: '{{$v.FieldValue}}',
+    label: '{{$v.FieldName}}',
+    component: '{{$v.FieldType}}',
+    colProps: { span: 8 },
+  },{{end}}
+];
+
+export const formSchema: FormSchema[] = [
+{{range $i, $v := .FrontendFields}}
+  {
+    field: '{{$v.FieldValue}}',
+    label: '{{$v.FieldName}}',
+    component: '{{$v.FieldType}}',
+    required: {{$v.Required}},
+  },{{end}}
+];

@@ -1,0 +1,38 @@
+import { {{.TableName}}Params, {{.TableName}}ListGetResultModel } from './model/{{.LowerTableName}}Model';
+
+import { defHttp } from '/@/utils/http/axios';
+
+enum Api {
+  {{.TableName}}List = '/{{.LowerTableName}}Source/list',
+  {{.TableName}}Delete = '/{{.LowerTableName}}Source/delete/',
+  {{.TableName}}Info = '/{{.LowerTableName}}Source/get/',
+  {{.TableName}}Add = '/{{.LowerTableName}}Source/add',
+  {{.TableName}}Edit = '/{{.LowerTableName}}Source/update',
+}
+
+export const get{{.TableName}}List = (params: {{.TableName}}Params) => {
+  return defHttp.post<{{.TableName}}ListGetResultModel>({ url: Api.{{.TableName}}List, params });
+};
+
+export const get{{.TableName}}ListAll = () => {
+  return defHttp.post<{{.TableName}}ListGetResultModel>({
+    url: Api.{{.TableName}}List,
+    params: {
+      pageSize: 100000,
+    },
+  });
+};
+
+export const delete{{.TableName}} = (id: string) => {
+  return defHttp.post({ url: Api.{{.TableName}}Delete + id });
+};
+
+export const get{{.TableName}}Info = (id: string) => {
+  return defHttp.post({ url: Api.{{.TableName}}Info + id });
+};
+
+export const add{{.TableName}} = (params: {{.TableName}}Params) =>
+  defHttp.post<{{.TableName}}ListGetResultModel>({ url: Api.{{.TableName}}Add, params });
+
+export const edit{{.TableName}} = (params: {{.TableName}}Params) =>
+  defHttp.post<{{.TableName}}ListGetResultModel>({ url: Api.{{.TableName}}Edit, params });

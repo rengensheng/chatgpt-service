@@ -1,0 +1,19 @@
+database:
+  username: "root"
+  pwd: "12345678"
+  driver_name: "mysql"
+  host: "127.0.0.1"
+  port: 3306
+  database_name: "lowcode"
+  show_sql: true
+  table_schema_name: "information_schema"
+service:
+  port: 8080
+  upload_dir: "upload"
+log:
+  log_file_path: "./log"
+  log_file_name: "log.log"
+  day: 7
+open_ai_key: ""
+openai_base_url: "https://api.openai.com/v1"
+secret_key: "opensource"

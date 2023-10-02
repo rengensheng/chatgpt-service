@@ -1,0 +1,16 @@
+import { BasicPageParams, BasicFetchResult } from '/@/api/model/baseModel';
+
+export type {{.TableName}}Params = BasicPageParams & {
+{{range $i, $v := .FrontendFields}}
+  {{$v.FieldValue}}?: string;{{end}}
+};
+
+export interface {{.TableName}}ListItem {
+{{range $i, $v := .SourceFields}}
+  {{$v.SourceName}}?: string;{{end}}
+}
+
+/**
+ * @description: Request list return value
+ */
+export type {{.TableName}}ListGetResultModel = BasicFetchResult<{{.TableName}}ListItem>;

@@ -1,0 +1,71 @@
+<template>
+  <BasicModal v-bind="$attrs" @register="registerModal" :title="getTitle" @ok="handleSubmit">
+    <BasicForm @register="registerForm" />
+  </BasicModal>
+</template>
+<script lang="ts">
+  import { defineComponent, ref, computed, unref } from 'vue';
+  import { BasicModal, useModalInner } from '/@/components/Modal';
+  import { BasicForm, useForm } from '/@/components/Form/index';
+  import { formSchema } from './{{.LowerTableName}}.data';
+
+  import { add{{.TableName}}, edit{{.TableName}} } from '/@/api/{{.LowerTableName}}/{{.LowerTableName}}';
+  export default defineComponent({
+    name: '{{.TableName}}Modal',
+    components: { BasicModal, BasicForm },
+    emits: ['success', 'register'],
+    setup(_, { emit }) {
+      const isUpdate = ref(true);
+      const rowId = ref('');
+
+      const [registerForm, { resetFields, setFieldsValue, validate }] = useForm({
+        labelWidth: 100,
+        schemas: formSchema,
+        showActionButtonGroup: false,
+      });
+
+      const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
+        resetFields();
+        setModalProps({ confirmLoading: false });
+        isUpdate.value = !!data?.isUpdate;
+
+        if (unref(isUpdate)) {
+          rowId.value = data?.record?.id;
+          setFieldsValue({
+            ...data.record,
+          });
+        }
+      });
+
+      const getTitle = computed(() => (!unref(isUpdate) ? '新增' : '编辑'));
+
+      async function handleSubmit() {
+        try {
+          const values = await validate();
+          setModalProps({ confirmLoading: true });
+          // TODO custom api
+          console.log(values);
+          if (isUpdate.value) {
+            const result = await edit{{.TableName}}({
+              id: rowId.value,
+              ...values,
+            });
+            console.log(result);
+            emit('success', { isUpdate: unref(isUpdate), values: { ...values, id: rowId.value } });
+            closeModal();
+          } else {
+            // 新增
+            const result = await add{{.TableName}}(values);
+            emit('success', { isUpdate: unref(isUpdate), values: { ...values, id: rowId.value } });
+            console.log(result);
+            closeModal();
+          }
+        } finally {
+          setModalProps({ confirmLoading: false });
+        }
+      }
+
+      return { registerModal, registerForm, getTitle, handleSubmit };
+    },
+  });
+</script>

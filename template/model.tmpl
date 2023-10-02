@@ -1,0 +1,62 @@
+package models
+
+import (
+	"errors"
+
+	"github.com/golang-module/carbon"
+	"github.com/goylold/lowcode/database"
+	"github.com/goylold/lowcode/utils"
+)
+
+const {{.TableName}}TableName string = "{{.TableName}}"
+
+type {{.TableName}} struct {
+  {{range $i, $v := .Fields}}
+  {{$v.StructName}} {{$v.FieldType}} `form:"{{$v.SourceName}}" json:"{{$v.SourceName}}" xorm:"{{$v.OrmInfo}}"{{$v.Conditions}}`{{$v.Comment}}
+  {{end}}
+}
+
+func (table *{{.TableName}}) Add() error {
+	engine := database.GetXOrmEngine()
+	table.Id = utils.GetUUID()
+	table.CreatedTime = carbon.Now().ToDateTimeString()
+	table.UpdatedTime = carbon.Now().ToDateTimeString()
+	_, err := engine.Table({{.TableName}}TableName).Insert(&table)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (table *{{.TableName}}) Update() error {
+	engine := database.GetXOrmEngine()
+	table.CreatedBy = ""
+	table.CreatedTime = ""
+	table.UpdatedTime = carbon.Now().ToDateTimeString()
+	_, err := engine.Table({{.TableName}}TableName).Where("id = ?", table.Id).Update(table)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (table *{{.TableName}}) Delete() error {
+	engine := database.GetXOrmEngine()
+	affected, err := engine.Table({{.TableName}}TableName).Where("id = ?", table.Id).Delete()
+	if affected == 0 {
+		return errors.New("没有找到删除的数据")
+	}
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (table *{{.TableName}}) GetOne(id string) error {
+	engine := database.GetXOrmEngine()
+	_, err := engine.Table({{.TableName}}TableName).Where("id = ?", id).Desc("id").Get(table)
+	if err != nil {
+		return err
+	}
+	return nil
+}
